@@ -1,0 +1,78 @@
+resource_types:
+- name: kubernetes
+  type: docker-image
+  source:
+    repository: zlabjp/kubernetes-resource
+    tag: "1.9"
+
+resources:
+  - name: git-demo
+    type: git
+    source:
+      uri: https://github.com/ONSdigital/takeon-ui
+      branch: dev
+  - name: docker-demo
+    type: docker-image
+    source:
+      repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd
+      aws_access_key_id: {{aws_access_key_id}}
+      aws_secret_access_key: {{aws_secret_access_key}}
+  - name: k8s
+    type: kubernetes
+    source:
+      kubeconfig: |
+        apiVersion: v1
+        clusters:
+          -
+            cluster:
+              certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1EY3dOREE1TURZd04xb1hEVEk1TURjd01UQTVNRFl3TjFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWVlCkg0Uys3RmJwTGRYeUt0blFmQnNva2M3STNoenZxaHJoUmJGanJFR1RtdzVUZFA2RzJ0QnBXbDlIRlJuZVpwa3gKZ1hLQVpic3Q1QktxQVhLcUhZK2NjRDBpRWwzV2s1R253b2dGdWdaVElFUUtSK1ZXWkRKQy9PYzllektTTkxxYQpwTGRGWStMMmd6emZ2VUI4T2o5Y1NqbDduT3NhTk15RHdGK1lCTUYwaEJNOWFnSlJjU2hFc2ZXcXRKKzNBaWRrCjdPeC9OcUUrcTM3MkM1eWpaUWc4TFFGQ1NldmQ1U1EzbWxwOGRyTlRSUUVUeFdLaGx0WmNwb0Fva2hlL0NkYnoKSkxGMDZpS2IyZXJ2MThRNXZjampTeGRGNFF3Q1BMaHNJRzRqZVRWVWtPN1VZcWJjMGtJTDQ5S1B2cTlvN0E5dAo0ZW5DelFwMG1zOUtIWXkzc0E4Q0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFFUWxOZmhvYlBGd0U2bjFXOHNhQXYwd0dJU0kKL2ExYVRRMkZjeEFWYmI1ajRZQXErVTA2czNsbmpjUm5XSjN2ck5TWFpKdlcrWGxsazhQTFMzbkpKQkhUb0NQaQpXdGhhdzhZcmI4NTJ1UXUvZ3VtcjJHZDBZaG9UTVh4eUZ5Z20rWUdMRnFwVWRqbC82UTJsUXJMaExCendveG5KClBLR0VkNVZDa05sTUt3d0FNbDBGdklpVTE4OUE0ZFA1RHRKZHJlZU1zMUhjeHl5K09uanU5VFNZbmsyWC9HcXAKWjRydThaQXZDRjhvTEp4SFJDazZtb1JQN0hIbmpDbnAzVVVvWjI2SUIrQmo3ODhPd0kyOW5Gc1YzaHpJcmI2VApJejBXS1RsbjNLa2RoMkNTQmd4RjZvWXNqd0JZRUpobWMyMjdhd3N5NWM5OVNpdTlUNVRMZ1dtVEdtcz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+              server: "https://F0266D5898B36702D4F43400327417FA.yl4.eu-west-2.eks.amazonaws.com"
+            name: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+        contexts:
+          -
+            context:
+              cluster: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+              user: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+            name: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+        current-context: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+        kind: Config
+        preferences: {}
+        users:
+          -
+            name: "arn:aws:eks:eu-west-2:014669633018:cluster/Take-On-Temp"
+            user:
+              exec:
+                apiVersion: client.authentication.k8s.io/v1alpha1
+                args:
+                  - token
+                  - "-i"
+                  - Take-On-Temp
+                command: aws-iam-authenticator.exe
+      use_aws_iam_authenticator: true
+      aws_eks_cluster_name: Take-On-Temp
+      aws_access_key_id: {{aws_access_key_id}}
+      aws_secret_access_key: {{aws_secret_access_key}}
+      namespace: cicd-test
+
+jobs:
+  - name: "Docker-Build"
+    public: false
+    plan:
+      - get: git-demo
+        trigger: true
+      - put: docker-demo
+        params:
+          build: git-demo
+  - name: "Deploy-Application"
+    public: false
+    plan:
+      - get: docker-demo
+        trigger: true
+        passed:
+          - "Docker-Build"
+      - put: k8s
+        params:
+          kubectl: delete pods -l app=ui-cicd -n cicd-test
+          kubectl: delete service -l app=ui-cicd-svc -n cicd-test
+          kubectl: apply -f ui-test-deployment.yaml
+          wait_until_ready: 300

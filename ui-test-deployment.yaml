@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: cicd-test
+  name: ui-cicd
+  labels:
+    app: ui-cicd
+spec:
+  replicas: 1
+  template:
+    metadata:
+      namespace: cicd-test
+      labels:
+        app: ui-cicd
+    spec:
+      containers:
+        - name: ui-cicd
+          image: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+      imagePullSecrets:
+        - name: aws-ecr
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-cicd-svc
+  labels:
+    app: ui-cicd-svc
+spec:
+  ports:
+  - port: 5001
+    targetPort: 5000
+    protocol: TCP
+  selector:
+    app: ui-cicd
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+  - 10.0.0.0/24
+  - 10.0.1.0/24
+  - 80.5.92.42/32
