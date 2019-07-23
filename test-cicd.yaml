@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
-    tag: "1.9"
+    tag: "1.13"
 
 resources:
   - name: git-demo
@@ -47,7 +47,7 @@ resources:
                   - token
                   - "-i"
                   - Take-On-Temp
-                command: aws-iam-authenticator.exe
+                command: aws-iam-authenticator
       use_aws_iam_authenticator: true
       aws_eks_cluster_name: Take-On-Temp
       aws_access_key_id: {{aws_access_key_id}}
@@ -73,6 +73,4 @@ jobs:
       - put: k8s
         params:
           kubectl: delete pods -l app=ui-cicd -n cicd-test
-          kubectl: delete service -l app=ui-cicd-svc -n cicd-test
-          kubectl: apply -f ui-test-deployment.yaml
-          wait_until_ready: 300
+          wait_until_ready_selector: app=ui-cicd
