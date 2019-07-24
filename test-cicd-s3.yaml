@@ -1,0 +1,59 @@
+resource_types:
+- name: kubernetes
+  type: docker-image
+  source:
+    repository: zlabjp/kubernetes-resource
+    tag: "1.13"
+
+resources:
+  - name: git-demo
+    type: git
+    source:
+      uri: https://github.com/ONSdigital/takeon-ui
+      branch: dev
+  - name: docker-demo
+    type: docker-image
+    source:
+      repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd
+      aws_access_key_id: {{aws_access_key_id}}
+      aws_secret_access_key: {{aws_secret_access_key}}
+  - name: kubeconfig-file
+    type: s3
+    source:
+      bucket: cicd-kubeconfig
+      versioned_file: kube_config.yaml
+      access_key_id: {{aws_access_key_id}}
+      secret_access_key: {{aws_secret_access_key}}
+      region_name: eu-west-2
+  - name: k8s
+    type: kubernetes
+    source:
+      use_aws_iam_authenticator: true
+      aws_eks_cluster_name: Take-On-Temp
+      aws_access_key_id: {{aws_access_key_id}}
+      aws_secret_access_key: {{aws_secret_access_key}}
+      namespace: cicd-test
+
+jobs:
+  - name: "Docker-Build"
+    public: false
+    plan:
+      - get: git-demo
+        trigger: true
+      - put: docker-demo
+        params:
+          build: git-demo
+  - name: "Deploy-Application"
+    public: false
+    plan:
+      - aggregate:
+        - get: docker-demo
+          trigger: true
+          passed:
+            - "Docker-Build"
+        - get: kubeconfig-file
+      - put: k8s
+        params:
+          kubectl: delete pods -l app=ui-cicd -n cicd-test
+          wait_until_ready_selector: app=ui-cicd
+          kubeconfig_file: kubeconfig-file/kube_config.yaml
