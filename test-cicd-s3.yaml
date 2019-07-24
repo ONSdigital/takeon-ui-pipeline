@@ -6,12 +6,12 @@ resource_types:
     tag: "1.13"
 
 resources:
-  - name: git-demo
+  - name: git-config
     type: git
     source:
       uri: https://github.com/ONSdigital/takeon-ui
       branch: dev
-  - name: docker-demo
+  - name: docker-config
     type: docker-image
     source:
       repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd
