@@ -1,6 +1,15 @@
 # takeon-ui-pipeline
 
-takeon-ui-pipeline contains the code for the Python Flask UI container pipeline.
+takeon-ui-pipeline contains the code for the Python Flask UI container pipeline.  This pipeline runs as follows:
+1. Triggered by a Git Push to the Dev Branch of the Takeon-UI GitHub repository 
+
+2. Builds a Docker image from this code 
+
+3. Pushes it to Amazon ECR
+
+4. Retrieves Kubernetes Configuration from a s3 Bucket
+
+5. Deploys application to Kubernetes
 
 ## Setting up Concourse and a Test pipeline
 
