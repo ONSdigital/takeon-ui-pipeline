@@ -9,12 +9,12 @@ resources:
   - name: git-repo
     type: git
     source:
-      uri: https://github.com/ONSdigital/takeon-ui
+      uri: {{git_repository}}
       branch: dev
   - name: docker-config
     type: docker-image
     source:
-      repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd
+      repository: {{ecr_repository}}
       aws_access_key_id: {{aws_access_key_id}}
       aws_secret_access_key: {{aws_secret_access_key}}
   - name: kubeconfig-file
@@ -24,12 +24,12 @@ resources:
       versioned_file: kube_config.yaml
       access_key_id: {{aws_access_key_id}}
       secret_access_key: {{aws_secret_access_key}}
-      region_name: eu-west-2
+      region_name: {{aws_region}}
   - name: k8s
     type: kubernetes
     source:
       use_aws_iam_authenticator: true
-      aws_eks_cluster_name: Take-On-Temp
+      aws_eks_cluster_name: {{cluster_name}}
       aws_access_key_id: {{aws_access_key_id}}
       aws_secret_access_key: {{aws_secret_access_key}}
       namespace: cicd-test
@@ -42,7 +42,9 @@ jobs:
         trigger: true
       - put: docker-config
         params:
+          # The path of a directory containing a Dockerfile to build
           build: git-repo
+          tag_as_latest: true
   - name: "Deploy-Application"
     public: false
     plan:
