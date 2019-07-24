@@ -6,7 +6,7 @@ resource_types:
     tag: "1.13"
 
 resources:
-  - name: git-config
+  - name: git-repo
     type: git
     source:
       uri: https://github.com/ONSdigital/takeon-ui
@@ -58,15 +58,15 @@ jobs:
   - name: "Docker-Build"
     public: false
     plan:
-      - get: git-demo
+      - get: git-repo
         trigger: true
-      - put: docker-demo
+      - put: docker-config
         params:
-          build: git-demo
+          build: git-repo
   - name: "Deploy-Application"
     public: false
     plan:
-      - get: docker-demo
+      - get: docker-config
         trigger: true
         passed:
           - "Docker-Build"
