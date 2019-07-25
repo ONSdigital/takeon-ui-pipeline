@@ -51,6 +51,9 @@ jobs:
       - aggregate:
         - get: docker-config
           trigger: true
+          # When specified, only the versions of the resource
+          # that made it through the given list of jobs will be considered when
+          # triggering and fetching.
           passed:
             - "Docker-Build"
         - get: kubeconfig-file
