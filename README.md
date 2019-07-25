@@ -37,7 +37,7 @@ docker-compose down
 ```bash
 fly --target test-cicd login --concourse-url http://127.0.0.1:8080 -u admin -p admin
 fly --target test-cicd sync
-fly -t test-cicd set-pipeline -p takeon-ui-pipeline -c test-cicd.yaml --load-vars-from params.yml
+fly -t test-cicd set-pipeline -p takeon-ui-pipeline -c ui-pipeline.yaml --load-vars-from params.yml
 fly -t test-cicd unpause-pipeline -p takeon-ui-pipeline
 ```
 To Destroy the pipeline:
