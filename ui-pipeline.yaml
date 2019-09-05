@@ -10,7 +10,7 @@ resources:
     type: git
     source:
       uri: {{git_repository}}
-      branch: dev
+      branch: master
   - name: docker-config
     type: docker-image
     source:
