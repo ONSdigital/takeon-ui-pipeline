@@ -32,7 +32,7 @@ resources:
       aws_eks_cluster_name: {{cluster_name}}
       aws_access_key_id: {{aws_access_key_id}}
       aws_secret_access_key: {{aws_secret_access_key}}
-      namespace: cicd-test
+      namespace: take-on
 
 jobs:
   - name: "Docker-Build"
@@ -59,6 +59,6 @@ jobs:
         - get: kubeconfig-file
       - put: k8s
         params:
-          kubectl: delete pods -l app=ui-cicd -n cicd-test
-          wait_until_ready_selector: app=ui-cicd
+          kubectl: delete pods -l app=takeon-ui -n take-on
+          wait_until_ready_selector: app=takeon-ui
           kubeconfig_file: kubeconfig-file/kube_config.yaml

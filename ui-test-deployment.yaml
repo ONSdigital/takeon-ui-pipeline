@@ -1,20 +1,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: cicd-test
-  name: ui-cicd
+  namespace: take-on
+  name: takeon-ui
   labels:
-    app: ui-cicd
+    app: takeon-ui
 spec:
   replicas: 1
   template:
     metadata:
-      namespace: cicd-test
+      namespace: take-on
       labels:
-        app: ui-cicd
+        app: takeon-ui
     spec:
       containers:
-        - name: ui-cicd
+        - name: takeon-ui
           image: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd:latest
           imagePullPolicy: Always
           ports:
@@ -31,16 +31,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ui-cicd-svc
+  name: takeon-ui-svc
   labels:
-    app: ui-cicd-svc
+    app: takeon-ui-svc
 spec:
   ports:
   - port: 5001
     targetPort: 5000
     protocol: TCP
   selector:
-    app: ui-cicd
+    app: takeon-ui
   type: LoadBalancer
   loadBalancerSourceRanges:
   - 10.0.0.0/24
