@@ -1,8 +1,7 @@
-aws_access_key_id:
-aws_secret_access_key:
 aws_region: eu-west-2
 
-cluster_name: Take-On-Temp
+cluster_name: takeon-dev-eks-cluster
+namespace: takeon-dev
 
-ecr_repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-ui-cicd
+ecr_repository: 014669633018.dkr.ecr.eu-west-2.amazonaws.com/takeon-dev-ui
 git_repository: https://github.com/ONSdigital/takeon-ui
